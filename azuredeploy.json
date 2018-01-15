@@ -22,30 +22,14 @@
         "metadata": {
           "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
         }
-      },
-      "_artifactsLocation": {
-        "type": "string"
-      },
-      "_artifactsLocationSasToken": {
-        "type": "securestring"
-      },
-      "myWebDeployPackageFolder": {
-        "type": "string",
-        "minLength": 1,
-        "metadata": {
-          "description": "WebDeploy package location. This path is relative to the _artifactsLocation parameter"
-        }
-      },
-      "myWebDeployPackageFileName": {
-        "type": "string",
-        "minLength": 1,
-        "metadata": {
-          "description": "Name of the webdeploy package"
-        }
-      }},
+      }
+    },
     "variables": {
       "mywebappName": "[concat('ontimeWebApp', uniqueString(resourceGroup().id))]",
-      "myappserviceplanName": "[concat('ontimeAppSvc', uniqueString(resourceGroup().id))]"
+      "myappserviceplanName": "[concat('ontimeAppSvc', uniqueString(resourceGroup().id))]", 
+      "_artifactsLocation": "https://armtempstore.blob.core.windows.net",
+      "mywebdeploypackageFolder": "resources", 
+      "mywebdeploypackageFileName": "package.zip"
     },
     "resources": [
       {
@@ -94,7 +78,7 @@
               "displayName": "myWebDeploy"
             },
             "properties": {
-              "packageUri": "[concat('https://armtempstore.blob.core.windows.net', '/', parameters('myWebDeployPackageFolder'), '/', parameters('myWebDeployPackageFileName'))]",
+              "packageUri": "[concat('https://armtempstore.blob.core.windows.net', '/', parameters('mywebdeploypackageFolder'), '/', parameters('mywebdeploypackageFileName'))]",
               "dbType": "None",
               "connectionString": "",
               "setParameters": {
