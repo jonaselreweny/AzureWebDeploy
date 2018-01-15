@@ -33,7 +33,7 @@
     },
     "resources": [
       {
-        "name": "[parameters('myappserviceplanName')]",
+        "name": "[variables('myappserviceplanName')]",
         "type": "Microsoft.Web/serverfarms",
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-08-01",
@@ -45,7 +45,7 @@
           "displayName": "myAppServicePlan"
         },
         "properties": {
-          "name": "[parameters('myappserviceplanName')]",
+          "name": "[variables('myappserviceplanName')]",
           "numberOfWorkers": 1
         }
       },
@@ -55,15 +55,15 @@
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-08-01",
         "dependsOn": [
-          "[resourceId('Microsoft.Web/serverfarms', parameters('myappserviceplanName'))]"
+          "[resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName'))]"
         ],
         "tags": {
-          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('myappserviceplanName')))]": "Resource",
+          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName')))]": "Resource",
           "displayName": "myWebApp"
         },
         "properties": {
           "name": "[variables('mywebappName')]",
-          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('myappserviceplanName'))]"
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName'))]"
         },
         "resources": [
           {
