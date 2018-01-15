@@ -1,0 +1,111 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "myAppServicePlanName": {
+        "type": "string",
+        "minLength": 1
+      },
+      "myAppServicePlanSkuName": {
+        "type": "string",
+        "defaultValue": "S1",
+        "allowedValues": [
+          "F1",
+          "D1",
+          "B1",
+          "B2",
+          "B3",
+          "S1",
+          "S2",
+          "S3",
+          "P1",
+          "P2",
+          "P3",
+          "P4"
+        ],
+        "metadata": {
+          "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+        }
+      },
+      "_artifactsLocation": {
+        "type": "string"
+      },
+      "_artifactsLocationSasToken": {
+        "type": "securestring"
+      },
+      "myWebDeployPackageFolder": {
+        "type": "string",
+        "minLength": 1,
+        "metadata": {
+          "description": "WebDeploy package location. This path is relative to the _artifactsLocation parameter"
+        }
+      },
+      "myWebDeployPackageFileName": {
+        "type": "string",
+        "minLength": 1,
+        "metadata": {
+          "description": "Name of the webdeploy package"
+        }
+      }},
+    "variables": {
+      "myWebAppName": "[concat('myWebApp', uniqueString(resourceGroup().id))]"},
+    "resources": [
+      {
+        "name": "[parameters('myAppServicePlanName')]",
+        "type": "Microsoft.Web/serverfarms",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2015-08-01",
+        "sku": {
+          "name": "[parameters('myAppServicePlanSkuName')]"
+        },
+        "dependsOn": [ ],
+        "tags": {
+          "displayName": "myAppServicePlan"
+        },
+        "properties": {
+          "name": "[parameters('myAppServicePlanName')]",
+          "numberOfWorkers": 1
+        }
+      },
+      {
+        "name": "[variables('myWebAppName')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2015-08-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('myAppServicePlanName'))]"
+        ],
+        "tags": {
+          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('myAppServicePlanName')))]": "Resource",
+          "displayName": "myWebApp"
+        },
+        "properties": {
+          "name": "[variables('myWebAppName')]",
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('myAppServicePlanName'))]"
+        },
+        "resources": [
+          {
+            "name": "MSDeploy",
+            "type": "extensions",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-08-01",
+            "dependsOn": [
+              "[resourceId('Microsoft.Web/sites', variables('myWebAppName'))]"
+            ],
+            "tags": {
+              "displayName": "myWebDeploy"
+            },
+            "properties": {
+              "packageUri": "[concat('https://armtempstore.blob.core.windows.net', '/', parameters('myWebDeployPackageFolder'), '/', parameters('myWebDeployPackageFileName'))]",
+              "dbType": "None",
+              "connectionString": "",
+              "setParameters": {
+                "IIS Web Application Name": "[variables('myWebAppName')]"
+              }
+            }
+          }
+        ]
+      }],
+    "outputs": {}
+  }
+  
