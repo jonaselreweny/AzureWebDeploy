@@ -78,7 +78,7 @@
               "displayName": "myWebDeploy"
             },
             "properties": {
-              "packageUri": "[concat('https://armtempstore.blob.core.windows.net', '/', parameters('mywebdeploypackageFolder'), '/', parameters('mywebdeploypackageFileName'))]",
+              "packageUri": "[concat('https://armtempstore.blob.core.windows.net', '/', variables('mywebdeploypackageFolder'), '/', variables('mywebdeploypackageFileName'))]",
               "dbType": "None",
               "connectionString": "",
               "setParameters": {
