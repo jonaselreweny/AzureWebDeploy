@@ -30,6 +30,7 @@
     },
     "variables": {
         "mywebappName": "[concat('ontimeWebApp', uniqueString(resourceGroup().id))]",
+        "config_web_name": "web",
         "myappserviceplanName": "[concat('ontimeAppSvc', uniqueString(resourceGroup().id))]", 
         "_artifactsLocation": "https://armtempstore.blob.core.windows.net",
         "mywebdeploypackageFolder": "resources", 
@@ -53,48 +54,65 @@
             "numberOfWorkers": 1
             }
         },
-      {
-        "name": "[variables('mywebappName')]",
-        "type": "Microsoft.Web/sites",
-        "location": "[parameters('siteLocation')]",
-        "apiVersion": "2015-08-01",
-        "dependsOn": [
-          "[resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName'))]"
-        ],
-        "tags": {
-          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName')))]": "Resource",
-          "displayName": "myWebApp"
-        },
-        "properties": {
-          "name": "[variables('mywebappName')]",
-          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName'))]"
-        },
-        "resources": [
-          {
-            "name": "MSDeploy",
-            "type": "extensions",
+        {
+            "name": "[variables('mywebappName')]",
+            "type": "Microsoft.Web/sites",
             "location": "[parameters('siteLocation')]",
             "apiVersion": "2015-08-01",
             "dependsOn": [
-              "[resourceId('Microsoft.Web/sites', variables('mywebappName'))]"
+            "[resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName'))]"
             ],
             "tags": {
-              "displayName": "myWebDeploy"
+            "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName')))]": "Resource",
+            "displayName": "myWebApp"
             },
             "properties": {
-                "javaVersion": "1.8",
-                "javaContainer": "TOMCAT",
-                "javaContainerVersion": "8.5",
-                "packageUri": "[concat(variables('_artifactsLocation'), '/', variables('mywebdeploypackageFolder'), '/', variables('mywebdeploypackageFileName'))]",
-                "dbType": "None",
-                "connectionString": "",
-                "setParameters": {
-                    "IIS Web Application Name": "[variables('mywebappName')]"
+            "name": "[variables('mywebappName')]",
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('myappserviceplanName'))]"
+            },
+            "resources": [
+            {
+                "name": "MSDeploy",
+                "type": "extensions",
+                "location": "[parameters('siteLocation')]",
+                "apiVersion": "2015-08-01",
+                "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('mywebappName'))]"
+                ],
+                "tags": {
+                "displayName": "myWebDeploy"
+                },
+                "properties": {
+                    "packageUri": "[concat(variables('_artifactsLocation'), '/', variables('mywebdeploypackageFolder'), '/', variables('mywebdeploypackageFileName'))]",
+                    "dbType": "None",
+                    "connectionString": "",
+                    "setParameters": {
+                        "IIS Web Application Name": "[variables('mywebappName')]"
+                    }
                 }
             }
-          }
-        ]
-      }],
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "name": "[concat(variables('mywebappName'), '/', variables('config_web_name'))]",
+            "apiVersion": "2016-08-01",
+            "location": "[parameters('siteLocation')]",
+            "tags": {
+                "displayName": "myWebApp"
+            },
+            "scale": null,
+            "properties": {
+                "remoteDebuggingVersion": "VS2012",
+                "javaVersion": "1.8",
+                "javaContainer": "TOMCAT",
+                "javaContainerVersion": "8.5"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('mywebappName'))]"
+            ]
+        }
+        ],
     "outputs": {}
   }
   
