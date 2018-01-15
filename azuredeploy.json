@@ -36,23 +36,23 @@
         "mywebdeploypackageFileName": "package.zip"
     },
     "resources": [
-      {
-        "name": "[variables('myappserviceplanName')]",
-        "type": "Microsoft.Web/serverfarms",
-        "location": "[parameters('siteLocation')]",
-        "apiVersion": "2015-08-01",
-        "sku": {
-          "name": "[parameters('myAppServicePlanSkuName')]"
+        {
+            "name": "[variables('myappserviceplanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('siteLocation')]",
+            "apiVersion": "2015-08-01",
+            "sku": {
+            "name": "[parameters('myAppServicePlanSkuName')]"
+            },
+            "dependsOn": [ ],
+            "tags": {
+            "displayName": "myAppServicePlan"
+            },
+            "properties": {
+            "name": "[variables('myappserviceplanName')]",
+            "numberOfWorkers": 1
+            }
         },
-        "dependsOn": [ ],
-        "tags": {
-          "displayName": "myAppServicePlan"
-        },
-        "properties": {
-          "name": "[variables('myappserviceplanName')]",
-          "numberOfWorkers": 1
-        }
-      },
       {
         "name": "[variables('mywebappName')]",
         "type": "Microsoft.Web/sites",
@@ -82,12 +82,15 @@
               "displayName": "myWebDeploy"
             },
             "properties": {
-              "packageUri": "[concat(variables('_artifactsLocation'), '/', variables('mywebdeploypackageFolder'), '/', variables('mywebdeploypackageFileName'))]",
-              "dbType": "None",
-              "connectionString": "",
-              "setParameters": {
-                "IIS Web Application Name": "[variables('mywebappName')]"
-              }
+                "javaVersion": "1.8",
+                "javaContainer": "TOMCAT",
+                "javaContainerVersion": "8.5",
+                "packageUri": "[concat(variables('_artifactsLocation'), '/', variables('mywebdeploypackageFolder'), '/', variables('mywebdeploypackageFileName'))]",
+                "dbType": "None",
+                "connectionString": "",
+                "setParameters": {
+                    "IIS Web Application Name": "[variables('mywebappName')]"
+                }
             }
           }
         ]
