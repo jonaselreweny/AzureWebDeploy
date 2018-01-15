@@ -2,10 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "myAppServicePlanName": {
-        "type": "string",
-        "minLength": 1
-      },
       "myAppServicePlanSkuName": {
         "type": "string",
         "defaultValue": "S1",
@@ -48,10 +44,12 @@
         }
       }},
     "variables": {
-      "myWebAppName": "[concat('myWebApp', uniqueString(resourceGroup().id))]"},
+      "mywebappName": "[concat('ontimeWebApp', uniqueString(resourceGroup().id))]",
+      "myappserviceplanName": "[concat('ontimeAppSvc', uniqueString(resourceGroup().id))]"
+    },
     "resources": [
       {
-        "name": "[parameters('myAppServicePlanName')]",
+        "name": "[parameters('myappserviceplanName')]",
         "type": "Microsoft.Web/serverfarms",
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-08-01",
@@ -63,25 +61,25 @@
           "displayName": "myAppServicePlan"
         },
         "properties": {
-          "name": "[parameters('myAppServicePlanName')]",
+          "name": "[parameters('myappserviceplanName')]",
           "numberOfWorkers": 1
         }
       },
       {
-        "name": "[variables('myWebAppName')]",
+        "name": "[variables('mywebappName')]",
         "type": "Microsoft.Web/sites",
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-08-01",
         "dependsOn": [
-          "[resourceId('Microsoft.Web/serverfarms', parameters('myAppServicePlanName'))]"
+          "[resourceId('Microsoft.Web/serverfarms', parameters('myappserviceplanName'))]"
         ],
         "tags": {
-          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('myAppServicePlanName')))]": "Resource",
+          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('myappserviceplanName')))]": "Resource",
           "displayName": "myWebApp"
         },
         "properties": {
-          "name": "[variables('myWebAppName')]",
-          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('myAppServicePlanName'))]"
+          "name": "[variables('mywebappName')]",
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('myappserviceplanName'))]"
         },
         "resources": [
           {
@@ -90,7 +88,7 @@
             "location": "[resourceGroup().location]",
             "apiVersion": "2015-08-01",
             "dependsOn": [
-              "[resourceId('Microsoft.Web/sites', variables('myWebAppName'))]"
+              "[resourceId('Microsoft.Web/sites', variables('mywebappName'))]"
             ],
             "tags": {
               "displayName": "myWebDeploy"
@@ -100,7 +98,7 @@
               "dbType": "None",
               "connectionString": "",
               "setParameters": {
-                "IIS Web Application Name": "[variables('myWebAppName')]"
+                "IIS Web Application Name": "[variables('mywebappName')]"
               }
             }
           }
